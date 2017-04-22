@@ -42,7 +42,7 @@ RUN chmod u+x start.sh && \
     touch /var/log/messages
 
 # Create auth user
-RUN htpasswd -b -c /home/conf/.htpasswd lero Lero*8 && \
+RUN htpasswd -b -c /home/conf/.htpasswd dockas Dockas*8 && \
     apk del ${build_pkgs}
 
 # Environment variables

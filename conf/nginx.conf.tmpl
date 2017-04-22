@@ -86,18 +86,32 @@ http {
         server 127.0.0.1:1114;{{end}}
     }
 
+    # Stage API Rest
+    upstream stage_api_rest {
+        least_conn; {{range service "stage-api-rest"}}
+        server {{.Address}}:{{.Port}};{{else}}
+        server 127.0.0.1:1115;{{end}}
+    }
+
     # Web Socket v1
     upstream socket_v1 {
         ip_hash;{{range service "socket-v1"}}
         server {{.Address}}:{{.Port}};{{else}}
-        server 127.0.0.1:1115;{{end}}
+        server 127.0.0.1:1116;{{end}}
+    }
+
+    # Stage Web Socket v1
+    upstream stage_socket {
+        ip_hash;{{range service "stage-socket"}}
+        server {{.Address}}:{{.Port}};{{else}}
+        server 127.0.0.1:1117;{{end}}
     }
 
     # File v1
     upstream file_v1 {
         least_conn; {{range service "file-v1"}}
         server {{.Address}}:{{.Port}};{{else}}
-        server 127.0.0.1:1116;{{end}}
+        server 127.0.0.1:1118;{{end}}
     }
 
     # Health check

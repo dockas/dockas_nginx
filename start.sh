@@ -7,10 +7,7 @@ mkdir -p /etc/letsencrypt
 mkdir -p /var/www/dockas.com \
          /var/www/api.dockas.com \
          /var/www/socket.dockas.com \
-         /var/www/blog.dockas.com \
-         /var/www/stage.dockas.com \
-         /var/www/api.stage.dockas.com \
-         /var/www/socket.stage.dockas.com
+         /var/www/blog.dockas.com
 
 # See https://github.com/letsencrypt/letsencrypt/issues/1154#issuecomment-151672549
 # run let's encrypt
@@ -24,13 +21,10 @@ if [ "$MODE" = "prod" ]; then
 
     if [ ! -f /etc/letsencrypt/live/dockas.com/fullchain.pem ]; then
         certbot certonly -m dev@dockas.com --text --agree-tos --keep-until-expiring --webroot \
-            -w /var/www/dockas.com -d dockas.com -d www.dockas.com \
-            -w /var/www/api.dockas.com -d api.dockas.com \
-            -w /var/www/socket.dockas.com -d socket.dockas.com \
-            -w /var/www/blog.dockas.com -d blog.dockas.com \
-            -w /var/www/stage.dockas.com -d stage.dockas.com \
-            -w /var/www/stage.api.dockas.com -d stage.api.dockas.com \
-            -w /var/www/stage.socket.dockas.com -d stage.socket.dockas.com
+            -w /var/www/dockas.com -d dockas.com -d www.dockas.com -d dockas.com.br -d www.dockas.com.br -d stage.dockas.com \
+            -w /var/www/api.dockas.com -d api.dockas.com -d api.dockas.com.br -d api.stage.dockas.com \
+            -w /var/www/socket.dockas.com -d socket.dockas.com -d socket.dockas.com.br -d socket.stage.dockas.com \
+            -w /var/www/blog.dockas.com -d blog.dockas.com
     else
         echo "letsencrypt/live/dockas.com has fullchain.pem file"
     fi

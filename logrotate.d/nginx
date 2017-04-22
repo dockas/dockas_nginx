@@ -1,0 +1,10 @@
+/var/log/nginx/*.log {
+    rotate 4
+    size 100M
+    delaycompress
+    missingok
+    sharedscripts
+    postrotate
+        test ! -f /var/run/nginx.pid || kill -USR1 `cat /var/run/nginx.pid`
+    endscript
+}

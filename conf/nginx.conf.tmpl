@@ -1,0 +1,123 @@
+user                    nginx;
+worker_processes        auto;
+error_log               /var/log/nginx/error.log;
+pid                     /var/run/nginx.pid;
+
+
+events {
+    worker_connections  8192;
+    multi_accept on;
+    use epoll;
+}
+
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    # Checkout a bug with vbox and sendfile syscall :
+    # - http://stackoverflow.com/questions/12719859/no-visible-cause-for-unexpected-token-illegal
+    # - https://github.com/mitchellh/vagrant/issues/351#issuecomment-1339640
+    # - https://www.virtualbox.org/ticket/9069
+    sendfile        off;
+    tcp_nopush      on;
+    server_tokens   off;
+    gzip            on;
+    gzip_buffers    16 8k;
+    gzip_comp_level 4;
+    gzip_types      text/plain text/css text/javascript application/javascript application/x-javascript application/json;
+    gzip_vary       on;
+    gzip_proxied    any;
+
+    # Disable for IE < 6 because there are some known problems
+    gzip_disable "MSIE [1-6].(?!.*SV1)";
+
+    keepalive_timeout  120;
+
+    # As pointed in https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-server-blocks-on-centos-7
+    server_names_hash_bucket_size 64;
+
+    # Consul
+    upstream consul {
+        least_conn; {{range service "consul"}}
+        server {{.Address}}:8500;{{else}}
+        server 127.0.0.1:8500;{{end}}
+    }
+
+    # Grafana
+    upstream grafana {
+        least_conn; {{range service "grafana"}}
+        server {{.Address}}:{{.Port}};{{else}}
+        server 127.0.0.1:1109;{{end}}
+    }
+
+    # Prometheus
+    upstream prometheus {
+        least_conn; {{range service "prometheus"}}
+        server {{.Address}}:{{.Port}};{{else}}
+        server 127.0.0.1:1110;{{end}}
+    }
+
+    # Ghost
+    upstream ghost {
+        least_conn; {{range service "ghost"}}
+        server {{.Address}}:{{.Port}};{{else}}
+        server 127.0.0.1:1111;{{end}}
+    }
+
+    # Haproxy
+    upstream haproxy {
+        least_conn; {{range service "haproxy"}}
+        server {{.Address}}:{{.Port}};{{else}}
+        server 127.0.0.1:1112;{{end}}
+    }
+
+    # Kibana
+    upstream kibana {
+        least_conn; {{range service "kibana"}}
+        server {{.Address}}:{{.Port}};{{else}}
+        server 127.0.0.1:1113;{{end}}
+    }
+
+    # API Rest v1
+    upstream api_rest_v1 {
+        least_conn; {{range service "api-rest-v1"}}
+        server {{.Address}}:{{.Port}};{{else}}
+        server 127.0.0.1:1114;{{end}}
+    }
+
+    # Web Socket v1
+    upstream socket_v1 {
+        ip_hash;{{range service "socket-v1"}}
+        server {{.Address}}:{{.Port}};{{else}}
+        server 127.0.0.1:1115;{{end}}
+    }
+
+    # File v1
+    upstream file_v1 {
+        least_conn; {{range service "file-v1"}}
+        server {{.Address}}:{{.Port}};{{else}}
+        server 127.0.0.1:1116;{{end}}
+    }
+
+    # Health check
+    server {
+        listen          80;
+
+        location /.health-check {
+            return 200 "i'm healthy";
+        }
+    }
+
+    # HTTP server definition
+    server {
+        listen              80;
+        listen              [::]:80 ipv6only=on;
+        server_name         dockas.com www.dockas.com blog.dockas.com;
+
+        return 301 https://$host$request_uri;
+    }
+
+    # Include all servers config files.
+    include /home/servers/*.conf;
+}

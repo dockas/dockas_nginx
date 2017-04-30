@@ -6,6 +6,7 @@ mkdir -p /etc/letsencrypt
 # Make letsencrypt directories
 mkdir -p /var/www/dockas.com \
          /var/www/api.dockas.com \
+         /var/www/file.dockas.com \
          /var/www/socket.dockas.com \
          /var/www/blog.dockas.com
 
@@ -22,6 +23,7 @@ if [ "$MODE" = "prod" ]; then
     if [ ! -f /etc/letsencrypt/live/dockas.com/fullchain.pem ]; then
         certbot certonly -m dev@dockas.com --text --agree-tos --keep-until-expiring --webroot \
             -w /var/www/dockas.com -d dockas.com -d www.dockas.com -d dockas.com.br -d www.dockas.com.br -d stage.dockas.com \
+            -w /var/www/file.dockas.com -d file.dockas.com -d file.dockas.com.br -d file.stage.dockas.com \
             -w /var/www/api.dockas.com -d api.dockas.com -d api.dockas.com.br -d api.stage.dockas.com \
             -w /var/www/socket.dockas.com -d socket.dockas.com -d socket.dockas.com.br -d socket.stage.dockas.com \
             -w /var/www/blog.dockas.com -d blog.dockas.com

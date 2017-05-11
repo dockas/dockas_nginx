@@ -9,3 +9,4 @@ FEA : Add file.stage.dockas.com(.br) server names to file server config.
 ENH : Generate SSL certificate for files server.
 FEA : Add ssl generation config specific to stage environment.
 BUG : Creta deep letsencrypt file in /etc/letsencrypt/live/dockas.com.
+BUG : Create symbolic link from stage letsencrypt live dir to production mock one.

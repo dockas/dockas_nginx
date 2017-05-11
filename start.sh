@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Make letsencrypt live directory
-mkdir -p /etc/letsencrypt/live/dockas.com
+mkdir -p /etc/letsencrypt
 
 # Make letsencrypt directories
 mkdir -p /var/www/dockas.com \
@@ -57,6 +57,9 @@ if [ "$MODE" = "stage" ]; then
         echo "letsencrypt/live/dockas.com has fullchain.pem file"
     fi
 
+    # Create symbolic link to stage cert files.
+    ln -s /etc/letsencrypt/live/stage.dockas.com /etc/letsencrypt/live/dockas.com
+
     # kill nginx
     nginx -c /home/conf/nginx_cert.stage.conf -s stop
 fi
@@ -64,6 +67,9 @@ fi
 # Generate a self signed certificate for testing only.
 if [ "$MODE" = "dev" ]; then
     echo ">> Running in dev mode"
+
+    # Generate fake letsencrypt deep cert dir.
+    mkdir -p /etc/letsencrypt/live/dockas.com
 
     # Generate a key for the Root CA
     openssl genrsa 8192 > /home/ssl/ca.key

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Make letsencrypt live directory
-mkdir -p /etc/letsencrypt
+mkdir -p /etc/letsencrypt/live/dockas.com
 
 # Make letsencrypt directories
 mkdir -p /var/www/dockas.com \
@@ -13,6 +13,8 @@ mkdir -p /var/www/dockas.com \
 # See https://github.com/letsencrypt/letsencrypt/issues/1154#issuecomment-151672549
 # run let's encrypt
 if [ "$MODE" = "prod" ]; then
+    echo ">> Running in prod mode"
+
     # Start nginx as a daemon to receive requests from letsencrypt
     nginx -c /home/conf/nginx_cert.conf -t && \
         nginx -c /home/conf/nginx_cert.conf -g 'daemon on;'
@@ -36,6 +38,8 @@ if [ "$MODE" = "prod" ]; then
 fi
 
 if [ "$MODE" = "stage" ]; then
+    echo ">> Running in stage mode"
+
     # Start nginx as a daemon to receive requests from letsencrypt
     nginx -c /home/conf/nginx_cert.stage.conf -t && \
         nginx -c /home/conf/nginx_cert.stage.conf -g 'daemon on;'
@@ -59,8 +63,7 @@ fi
 
 # Generate a self signed certificate for testing only.
 if [ "$MODE" = "dev" ]; then
-    # Create the letsencrypt destination dir
-    mkdir -p /etc/letsencrypt/live/dockas.com
+    echo ">> Running in dev mode"
 
     # Generate a key for the Root CA
     openssl genrsa 8192 > /home/ssl/ca.key

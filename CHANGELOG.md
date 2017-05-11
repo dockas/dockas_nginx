@@ -7,3 +7,4 @@ BUG : Correct bug with missing .com.br endpoints in nginx.cert.conf.
 ENH : Update file server config to serve static files in /home/files directory.
 FEA : Add file.stage.dockas.com(.br) server names to file server config.
 ENH : Generate SSL certificate for files server.
+FEA : Add ssl generation config specific to stage environment.

@@ -22,10 +22,10 @@ if [ "$MODE" = "prod" ]; then
 
     if [ ! -f /etc/letsencrypt/live/dockas.com/fullchain.pem ]; then
         certbot certonly -m dev@dockas.com --text --agree-tos --keep-until-expiring --webroot \
-            -w /var/www/dockas.com -d dockas.com -d www.dockas.com -d dockas.com.br -d www.dockas.com.br -d stage.dockas.com \
-            -w /var/www/file.dockas.com -d file.dockas.com -d file.dockas.com.br -d file.stage.dockas.com \
-            -w /var/www/api.dockas.com -d api.dockas.com -d api.dockas.com.br -d api.stage.dockas.com \
-            -w /var/www/socket.dockas.com -d socket.dockas.com -d socket.dockas.com.br -d socket.stage.dockas.com \
+            -w /var/www/dockas.com -d dockas.com -d www.dockas.com -d dockas.com.br -d www.dockas.com.br \
+            -w /var/www/file.dockas.com -d file.dockas.com -d file.dockas.com.br \
+            -w /var/www/api.dockas.com -d api.dockas.com -d api.dockas.com.br \
+            -w /var/www/socket.dockas.com -d socket.dockas.com -d socket.dockas.com.br \
             -w /var/www/blog.dockas.com -d blog.dockas.com
     else
         echo "letsencrypt/live/dockas.com has fullchain.pem file"
@@ -33,6 +33,28 @@ if [ "$MODE" = "prod" ]; then
 
     # kill nginx
     nginx -c /home/conf/nginx_cert.conf -s stop
+fi
+
+if [ "$MODE" = "stage" ]; then
+    # Start nginx as a daemon to receive requests from letsencrypt
+    nginx -c /home/conf/nginx_cert.stage.conf -t && \
+        nginx -c /home/conf/nginx_cert.stage.conf -g 'daemon on;'
+
+    # Give a break for health checking.
+    sleep 20
+
+    if [ ! -f /etc/letsencrypt/live/dockas.com/fullchain.pem ]; then
+        certbot certonly -m dev@dockas.com --text --agree-tos --keep-until-expiring --webroot \
+            -w /var/www/dockas.com -d stage.dockas.com \
+            -w /var/www/file.dockas.com -d file.stage.dockas.com \
+            -w /var/www/api.dockas.com -d api.stage.dockas.com \
+            -w /var/www/socket.dockas.com -d socket.stage.dockas.com
+    else
+        echo "letsencrypt/live/dockas.com has fullchain.pem file"
+    fi
+
+    # kill nginx
+    nginx -c /home/conf/nginx_cert.stage.conf -s stop
 fi
 
 # Generate a self signed certificate for testing only.

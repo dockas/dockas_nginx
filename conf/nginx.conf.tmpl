@@ -100,6 +100,13 @@ http {
         server 127.0.0.1:1116;{{end}}
     }
 
+    # API Rest v1
+    upstream billing_v1 {
+        least_conn; {{range service "billing-v1"}}
+        server {{.Address}}:{{.Port}};{{else}}
+        server 127.0.0.1:1117;{{end}}
+    }
+
     # Health check
     server {
         listen          80;

@@ -11,3 +11,4 @@ FEA : Add ssl generation config specific to stage environment.
 BUG : Creta deep letsencrypt file in /etc/letsencrypt/live/dockas.com.
 BUG : Create symbolic link from stage letsencrypt live dir to production mock one.
 BUG : Proxy socket.io request to api_rest instead to a "socket" service.
+ENH : Add billing service proxy when accessing api /v1/billing/notifications/*.
